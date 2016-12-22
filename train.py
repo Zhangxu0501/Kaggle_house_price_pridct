@@ -76,10 +76,10 @@ price_info=np.float32(price_info)
 price_info.resize((1460,1))
 
 house_info_cv=get_cv(house_info)
-house_info_new=np.hstack((house_info,house_info_cv))
+house_info=np.hstack((house_info,house_info_cv))
 
 print price_info.shape
-print house_info_new.shape
+print house_info.shape
 
 #以上是对特征的 一系列处理,字符串转为float,将离散的特征变为数字
 # 处理之后得到 N*3239的矩阵,开始训练
@@ -94,10 +94,10 @@ xx_normal=tf.nn.l2_normalize(x,0)
 theta=weight_variable([3239,1])
 bias=tf.random_normal([1])
 
-
 result=tf.matmul(xx_normal,theta)+bias
 
-loss=tf.reduce_mean(tf.square(result-y))
+loss1=tf.square(result-y)
+loss=tf.reduce_mean(loss1)
 
 train_step=tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 
@@ -105,18 +105,18 @@ train_step=tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 saver=tf.train.Saver()
 
 
-#init = tf.initialize_all_variables()
+init = tf.initialize_all_variables()
 
 
 with tf.Session() as sess:
-    #sess.run(init)
+    sess.run(init)
     saver.restore(sess,"save.ckpt")
     for i in range(10000):
         if i%100==0:
-            print sess.run(loss,feed_dict={x:house_info_new,y:price_info})
-            print list(sess.run(result,feed_dict={x:house_info_new,y:price_info}))
+            print sess.run(loss,feed_dict={x:house_info,y:price_info})
+            print list(sess.run(result,feed_dict={x:house_info,y:price_info}))
             print "save in :"+saver.save(sess,"save.ckpt")
-        sess.run(train_step,feed_dict={x:house_info_new,y:price_info})
+        sess.run(train_step,feed_dict={x:house_info,y:price_info})
 
 
 

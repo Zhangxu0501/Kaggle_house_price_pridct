@@ -100,8 +100,9 @@ for i in range(0,len(lines)):
 house_info=np.float32(house_info)
 
 house_info_cv=get_cv(house_info)
-house_info_new=np.hstack((house_info,house_info_cv))
-print house_info_new.shape
+#
+# house_info_new=np.hstack((house_info,house_info_cv))
+print house_info.shape
 
 
 
@@ -111,13 +112,13 @@ print house_info_new.shape
 
 
 
-x=tf.placeholder(dtype=tf.float32,shape=[None,3239])
+x=tf.placeholder(dtype=tf.float32,shape=[None,79])
 
 
 
 xx_normal=tf.nn.l2_normalize(x,0)
 
-theta=weight_variable([3239,1])
+theta=weight_variable([79,1])
 bias=tf.random_normal([1])
 
 
@@ -134,11 +135,12 @@ saver=tf.train.Saver()
 with tf.Session() as sess:
     #sess.run(init)
     saver.restore(sess,"save.ckpt")
-    res=sess.run(result,feed_dict={x:house_info_new})
+    res=sess.run(result,feed_dict={x:house_info})
     res=list(res)
 
     count=1461
     file=open('result.csv','w')
+    file.write('Id,SalePrice\n')
     for i in range(len(res)):
         line=str(count) + ',' + str(res[i][0] )+'\n'
         count=count+1
